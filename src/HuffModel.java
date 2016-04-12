@@ -26,8 +26,7 @@ public class HuffModel
     @Override
     public void showCounts()
     {
-        // TODO Auto-generated method stub
-
+       CharCounter.countAll(istream);
     }
 
 
@@ -41,8 +40,7 @@ public class HuffModel
     @Override
     public void initialize(InputStream stream)
     {
-        istream = (BitInputStream)stream;
-        BitInputStream bits = new BitInputStream(new FileInputStream("poe.txt"));
+        istream = stream;
     }
 
 

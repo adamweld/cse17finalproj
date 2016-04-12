@@ -18,8 +18,7 @@ public class CharCounter
      */
     private int[] array = new int[256];
     private int inbits;
-    private final int BITS_PER_WORD = 16;
-
+    
 
     /**
      * Returns the count associated with specified character.
@@ -55,7 +54,7 @@ public class CharCounter
     public int countAll(InputStream stream)
         throws IOException
     {
-        BitInputStream bits = new BitInputStream(new FileInputStream("poe.txt"));
+        BitInputStream bits = stream;
         while ((inbits = bits.read(BITS_PER_WORD)) != -1)
         {
 
