@@ -1,6 +1,7 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidParameterException;
 
 // -------------------------------------------------------------------------
 /**
@@ -13,12 +14,10 @@ import java.io.InputStream;
 public class CharCounter
     implements ICharCounter
 {
-    private static final int BITS_PER_WORD = 8;
     /**
      * 256 bit array object to store values
      */
     int[] array = new int[256];
-    private int inbits;
 
 
     /**
@@ -33,10 +32,9 @@ public class CharCounter
     @Override
     public int getCount(int ch)
     {
-        int ret = 0;
-
-
-        return ret;
+        if (ch < 0 || ch > 255)
+            throw new InvalidParameterException();
+        return array[ch];
     }
 
 
@@ -53,11 +51,12 @@ public class CharCounter
     public int countAll(InputStream stream)
         throws IOException
     {
+        int inbits;
         int count = 0;
-        BitInputStream bits = (BitInputStream)stream;
-        while ((inbits = bits.read(BITS_PER_WORD)) != -1)
+        while ((inbits =
+            ((BitInputStream)stream).read(IHuffModel.BITS_PER_WORD)) != -1)
         {
-            System.out.println((char)inbits); // put writes one character
+            count++;
             add(inbits);
         }
         return count;
@@ -88,8 +87,7 @@ public class CharCounter
     @Override
     public void set(int i, int value)
     {
-        // TODO Auto-generated method stub
-
+        array[i] = value;
     }
 
 
@@ -99,8 +97,10 @@ public class CharCounter
     @Override
     public void clear()
     {
-        // TODO Auto-generated method stub
-
+        for (int i = 0; i < array.length; i++)
+        {
+            array[i] = 0;
+        }
     }
 
 }

@@ -1,9 +1,16 @@
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+// -------------------------------------------------------------------------
+/**
+ * Write a one-sentence summary of your class here. Follow it with additional
+ * details about its purpose, what abstraction it represents, and how to use it.
+ *
+ * @author adamweld
+ * @version Apr 12, 2016
+ */
 public class HuffModel
     implements IHuffModel
 {
@@ -27,19 +34,21 @@ public class HuffModel
     @Override
     public void showCounts()
     {
-       CharCounter cc = new CharCounter();
-       try
-    {
-        cc.countAll(istream);
-    }
-    catch (IOException e)
-    {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-    }
-       for(int i = 0; i < cc.array.length; i++) {
-           System.out.println(i + ": \t" + cc.array[i]);
-       }
+        CharCounter cc = new CharCounter();
+        try
+        {
+            cc.countAll(istream);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        System.out.println("Frequency of each character (0 - 255):");
+        for (int i = 0; i < cc.array.length; i++)
+        {
+            System.out.println(i + ": \t" + cc.array[i]);
+        }
     }
 
 
