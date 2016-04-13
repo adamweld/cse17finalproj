@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -26,7 +27,19 @@ public class HuffModel
     @Override
     public void showCounts()
     {
-       CharCounter.countAll(istream);
+       CharCounter cc = new CharCounter();
+       try
+    {
+        cc.countAll(istream);
+    }
+    catch (IOException e)
+    {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+    }
+       for(int i = 0; i < cc.array.length; i++) {
+           System.out.println(i + ": \t" + cc.array[i]);
+       }
     }
 
 
@@ -40,7 +53,7 @@ public class HuffModel
     @Override
     public void initialize(InputStream stream)
     {
-        istream = stream;
+        istream = (BitInputStream)stream;
     }
 
 

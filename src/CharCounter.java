@@ -13,12 +13,13 @@ import java.io.InputStream;
 public class CharCounter
     implements ICharCounter
 {
+    private static final int BITS_PER_WORD = 8;
     /**
      * 256 bit array object to store values
      */
-    private int[] array = new int[256];
+    int[] array = new int[256];
     private int inbits;
-    
+
 
     /**
      * Returns the count associated with specified character.
@@ -33,9 +34,7 @@ public class CharCounter
     public int getCount(int ch)
     {
         int ret = 0;
-//        for(int i = 0; i < array.length; i++) {
-//
-//        }
+
 
         return ret;
     }
@@ -54,14 +53,14 @@ public class CharCounter
     public int countAll(InputStream stream)
         throws IOException
     {
-        BitInputStream bits = stream;
+        int count = 0;
+        BitInputStream bits = (BitInputStream)stream;
         while ((inbits = bits.read(BITS_PER_WORD)) != -1)
         {
-
             System.out.println((char)inbits); // put writes one character
-            add(inbits)
-
+            add(inbits);
         }
+        return count;
     }
 
 
