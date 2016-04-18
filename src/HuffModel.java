@@ -48,11 +48,48 @@ public class HuffModel
 
         HuffTree tree = buildTree(Hheap);
 
+        String[] return = new String[256];
+
+     // use the zero/one value of the bit read
+
+     // to traverse Huffman coding tree
+
+     // if a leaf is reached, decode the character and print UNLESS
+
+     // the character is pseudo-EOF, then decompression done
+        int bits;
 
 
 
+     if ( (bits & 1) == 0) // read a 0, go left in tree
+
+     else // read a 1, go right in tree
+
+
+
+     if (at leaf-node in tree)
+
+     {
+
+     if (leaf-node stores pseudo-eof char)
+
+     break; // out of loop
+
+     else
+
+     write character stored in leaf-node
+
+     }
+
+     }
 
     }
+
+
+    public String[] Traversal(String[] in);
+    {
+
+
 
     HuffTree buildTree(MinHeap Hheap)
     {
@@ -70,6 +107,7 @@ public class HuffModel
         }
         return tmp3; // Return the tree
     }
+
 
     /**
      * Display all chunk/character counts (via the associated view).
