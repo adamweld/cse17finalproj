@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 // -------------------------------------------------------------------------
 /**
@@ -23,10 +24,52 @@ public class HuffModel
     @Override
     public void showCodings()
     {
-        // TODO Auto-generated method stub
+        HuffTree[] out = new HuffTree[256];
+        CharCounter cc = new CharCounter();
+        try
+        {
+            cc.countAll(istream);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        int j = 0;
+        for (int i = 0; i < cc.array.length; i++)
+        {
+            if (cc.array[i] != 0) {
+               out[j++] = new HuffTree((char) i, cc.array[i]);
+            }
+        }
+
+
+        MinHeap Hheap = new MinHeap(out, j, 256);
+
+        HuffTree tree = buildTree(Hheap);
+
+
+
+
 
     }
 
+    HuffTree buildTree(MinHeap Hheap)
+    {
+        HuffTree tmp1, tmp2, tmp3 = null;
+
+        while (Hheap.heapsize() > 1)
+        { // While two items left
+            tmp1 = (HuffTree)Hheap.removemin();
+            tmp2 = (HuffTree)Hheap.removemin();
+            tmp3 = new HuffTree(
+                tmp1.root(),
+                tmp2.root(),
+                tmp1.weight() + tmp2.weight());
+            Hheap.insert(tmp3); // Return new tree to heap
+        }
+        return tmp3; // Return the tree
+    }
 
     /**
      * Display all chunk/character counts (via the associated view).
