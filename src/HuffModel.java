@@ -35,6 +35,8 @@ public class HuffModel
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+
         int j = 0;
         for (int i = 0; i < cc.array.length; i++)
         {
@@ -43,51 +45,42 @@ public class HuffModel
             }
         }
 
-
         MinHeap Hheap = new MinHeap(out, j, 256);
 
         HuffTree tree = buildTree(Hheap);
 
-        String[] return = new String[256];
+        String[] output = new String[256];
 
-     // use the zero/one value of the bit read
+        j = 0;
+        for(int k = 0; k < out.length; k++) {
+            String str = "";
+            output[j++] = traverse(out[k], str);
 
-     // to traverse Huffman coding tree
+            System.out.println(output[j - 1]);
+        }
 
-     // if a leaf is reached, decode the character and print UNLESS
-
-     // the character is pseudo-EOF, then decompression done
-        int bits;
-
-
-
-     if ( (bits & 1) == 0) // read a 0, go left in tree
-
-     else // read a 1, go right in tree
-
-
-
-     if (at leaf-node in tree)
-
-     {
-
-     if (leaf-node stores pseudo-eof char)
-
-     break; // out of loop
-
-     else
-
-     write character stored in leaf-node
-
-     }
-
-     }
 
     }
 
 
-    public String[] Traversal(String[] in);
-    {
+    // ----------------------------------------------------------
+    /**
+     * recursive traversal method
+     * @param root
+     * @param path
+     * @return
+     */
+    public String travere(HuffBaseNode root, String path) {
+
+        traverse(((HuffInternalNode)root).left(), path + "0");
+
+        traverse(((HuffInternalNode)root).right(), path + "1");
+
+        return path;
+
+    }
+
+
 
 
 
