@@ -163,6 +163,17 @@ public class HuffModel
 
     public void wTraverse(HuffTree tree, BitOutputStream bit) {
 
+        if(tree.root().isLeaf()) {
+            bit.write(1,1); // leaf node
+            bit.write(9, ((HuffLeafNode)tree.root()).element());
+        } else {
+            bit.write(1,0);
+        }
+        wTraverse(((HuffInternalNode)tree.root()).left(), bit);
+        wTraverse(((HuffInternalNode)tree.root()).right(), bit);
+
+        bit.write(1, 1);
+        bit.write(9, PSEUDO_EOF);
     }
 
 
