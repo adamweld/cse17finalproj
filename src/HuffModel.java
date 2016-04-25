@@ -36,12 +36,12 @@ public class HuffModel
             e.printStackTrace();
         }
 
-
         int j = 0;
         for (int i = 0; i < cc.array.length; i++)
         {
-            if (cc.array[i] != 0) {
-               out[j++] = new HuffTree((char) i, cc.array[i]);
+            if (cc.array[i] != 0)
+            {
+                out[j++] = new HuffTree((char)i, cc.array[i]);
             }
         }
 
@@ -52,13 +52,13 @@ public class HuffModel
         String[] output = new String[256];
 
         j = 0;
-        for(int k = 0; k < out.length; k++) {
+        for (int k = 0; k < out.length; k++)
+        {
             String str = "";
             output[j++] = traverse((HuffBaseNode)out[k], str);
 
             System.out.println(output[j - 1]);
         }
-
 
     }
 
@@ -66,11 +66,13 @@ public class HuffModel
     // ----------------------------------------------------------
     /**
      * recursive traversal method
+     *
      * @param root
      * @param path
      * @return
      */
-    public String traverse(HuffBaseNode root, String path) {
+    public String traverse(HuffBaseNode root, String path)
+    {
 
         traverse(((HuffInternalNode)root).left(), path + "0");
 
@@ -79,9 +81,6 @@ public class HuffModel
         return path;
 
     }
-
-
-
 
 
     HuffTree buildTree(MinHeap Hheap)
@@ -158,25 +157,68 @@ public class HuffModel
     public void write(InputStream stream, String file, boolean force)
     {
         BitOutputStream out = new BitOutputStream("file");
+        istream = (BitInputStream)stream;
+        HuffTree[] treeArray = new HuffTree[256];
+        CharCounter cc = new CharCounter();
+        try
+        {
+            cc.countAll(istream);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        int j = 0;
+        for (int i = 0; i < cc.array.length; i++)
+        {
+            if (cc.array[i] != 0)
+            {
+                treeArray[j++] = new HuffTree((char)i, cc.array[i]);
+            }
+        }
+
+        MinHeap Hheap = new MinHeap(treeArray, j, 256);
+
+        HuffTree tree = buildTree(Hheap);
+
+        String[] output = new String[256];
+
+        j = 0;
+        for (int k = 0; k < treeArray.length; k++)
+        {
+            String str = "";
+            output[j++] = traverse((HuffBaseNode)treeArray[k], str);
+
+            System.out.println(output[j - 1]);
+        }
+
         out.write(BITS_PER_INT, MAGIC_NUMBER);
 
+        wTraverse(tree.root(), out);
 
         out.close();
     }
 
-    public void wTraverse(HuffTree tree, BitOutputStream bit) {
 
-        if(tree.root().isLeaf()) {
-            bit.write(1,1); // leaf node
-            bit.write(9, ((HuffLeafNode)tree.root()).element());
-        } else {
-            bit.write(1,0);
+    public void wTraverse(HuffBaseNode root, BitOutputStream bit)
+    {
+
+        if (root.isLeaf())
+        {
+            bit.write(1, 1); // leaf node
+            bit.write(9, ((HuffLeafNode)root).element());
         }
-        wTraverse(((HuffInternalNode)tree.root()).left(), bit);
-        wTraverse(((HuffInternalNode)tree.root()).right(), bit);
+        else
+        {
+            bit.write(1, 0);
+        }
+        wTraverse(((HuffInternalNode)root).left(), bit);
+        wTraverse(((HuffInternalNode)root).right(), bit);
 
-//        bit.write(1, 1);
-//        bit.write(9, PSEUDO_EOF);
+// bit.write(1, 1);
+// bit.write(9, PSEUDO_EOF);
     }
 
 
