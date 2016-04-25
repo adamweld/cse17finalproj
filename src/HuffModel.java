@@ -159,6 +159,9 @@ public class HuffModel
     {
         BitOutputStream out = new BitOutputStream("file");
         out.write(BITS_PER_INT, MAGIC_NUMBER);
+
+
+        out.close();
     }
 
     public void wTraverse(HuffTree tree, BitOutputStream bit) {
@@ -172,8 +175,8 @@ public class HuffModel
         wTraverse(((HuffInternalNode)tree.root()).left(), bit);
         wTraverse(((HuffInternalNode)tree.root()).right(), bit);
 
-        bit.write(1, 1);
-        bit.write(9, PSEUDO_EOF);
+//        bit.write(1, 1);
+//        bit.write(9, PSEUDO_EOF);
     }
 
 
