@@ -44,7 +44,7 @@ public interface IHuffModel extends IHuffConstants {
      * @param file specifes the file to be written with compressed data
      * @param force indicates if compression forced
      */
-    public void write(InputStream stream, File file, boolean force);
+    public void write(InputStream stream, String file, boolean force);
 
     /**
      * Uncompress a previously compressed file.

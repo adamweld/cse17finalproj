@@ -54,7 +54,7 @@ public class HuffModel
         j = 0;
         for(int k = 0; k < out.length; k++) {
             String str = "";
-            output[j++] = traverse(out[k], str);
+            output[j++] = traverse((HuffBaseNode)out[k], str);
 
             System.out.println(output[j - 1]);
         }
@@ -70,7 +70,7 @@ public class HuffModel
      * @param path
      * @return
      */
-    public String travere(HuffBaseNode root, String path) {
+    public String traverse(HuffBaseNode root, String path) {
 
         traverse(((HuffInternalNode)root).left(), path + "0");
 
@@ -155,9 +155,13 @@ public class HuffModel
      *            indicates if compression forced
      */
     @Override
-    public void write(InputStream stream, File file, boolean force)
+    public void write(InputStream stream, String file, boolean force)
     {
-        // TODO Auto-generated method stub
+        BitOutputStream out = new BitOutputStream("file");
+        out.write(BITS_PER_INT, MAGIC_NUMBER);
+    }
+
+    public void wTraverse(HuffTree tree, BitOutputStream bit) {
 
     }
 
