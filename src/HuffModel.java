@@ -15,7 +15,11 @@ import java.util.ArrayList;
 public class HuffModel
     implements IHuffModel
 {
-    BitInputStream istream;
+    /**
+     * input stream
+     */
+    public BitInputStream istream;
+    public String[]       encodings;
 
 
     /**
@@ -41,7 +45,9 @@ public class HuffModel
         {
             if (cc.array[i] != 0)
             {
-                out[j++] = new HuffTree((char)i, cc.array[i]);
+                out[j++] = new HuffTree((char)i, cc.array[i]); // create new
+                                                               // leaf node with
+                                                               // each char
             }
         }
 
@@ -49,15 +55,12 @@ public class HuffModel
 
         HuffTree tree = buildTree(Hheap);
 
-        String[] output = new String[256];
+        encodings = new String[j];
 
-        j = 0;
-        for (int k = 0; k < out.length; k++)
-        {
-            String str = "";
-            output[j++] = traverse((HuffBaseNode)out[k], str);
+        traverse(tree.root(), "", 0);
 
-            System.out.println(output[j - 1]);
+        for(int k = 0; k < j; k++) {
+            System.out.println(encodings[k]);
         }
 
     }
@@ -69,20 +72,34 @@ public class HuffModel
      *
      * @param root
      * @param path
-     * @return
+     * @param num
      */
-    public String traverse(HuffBaseNode root, String path)
+    public void traverse(HuffBaseNode root, String path, int num)
     {
+        System.out.println("made it");
+        while (root != null)
+        {
 
-        traverse(((HuffInternalNode)root).left(), path + "0");
-
-        traverse(((HuffInternalNode)root).right(), path + "1");
-
-        return path;
-
+            traverse(((HuffInternalNode)root).left(), path + "0", num);
+            if (root.isLeaf())
+            {
+                encodings[num] = path + ((HuffLeafNode)root).element();
+                num++;
+//                path = "";
+            }
+            traverse(((HuffInternalNode)root).right(), path + "1", num);
+        }
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * build tree method from canvas
+     *
+     * @param Hheap
+     *            is input
+     * @return built tree
+     */
     HuffTree buildTree(MinHeap Hheap)
     {
         HuffTree tmp1, tmp2, tmp3 = null;
@@ -120,7 +137,10 @@ public class HuffModel
         System.out.println("Frequency of each character (0 - 255):");
         for (int i = 0; i < cc.array.length; i++)
         {
-            System.out.println(i + ": \t" + cc.array[i]);
+            if (cc.array[i] != 0)
+            {
+                System.out.println(i + ": \t" + cc.array[i]);
+            }
         }
     }
 

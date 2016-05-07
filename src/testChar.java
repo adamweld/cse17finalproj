@@ -24,10 +24,11 @@ public class testChar
         {
             BitInputStream bits = new BitInputStream(
                 new FileInputStream(
-                    "C:\\Users\\adamweld\\Documents\\text.txt"));
+                    "C:\\Users\\adamweld\\Downloads\\test.txt"));
             HuffModel huff = new HuffModel();
             huff.initialize(bits);
             huff.showCounts();
+            huff.showCodings();
         }
         catch (FileNotFoundException e)
         {
