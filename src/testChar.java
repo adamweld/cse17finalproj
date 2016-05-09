@@ -28,8 +28,8 @@ public class testChar
             HuffModel huff = new HuffModel();
             huff.initialize(bits);
             huff.showCounts();
-//            huff.showCodings();
-            huff.write(bits, "C:\\Users\\adamweld\\Downloads\\testout.txt", true);
+            huff.showCodings();
+//            huff.write(bits, "C:\\Users\\adamweld\\Downloads\\testout.txt", true);
         }
         catch (FileNotFoundException e)
         {

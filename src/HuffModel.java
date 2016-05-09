@@ -51,7 +51,8 @@ public class HuffModel
 
         for (int k = 0; k < 257; k++)
         {
-            if(encodings[k] != null) {
+            if (encodings[k] != null)
+            {
                 System.out.println((char)k + ": " + encodings[k]);
             }
         }
@@ -166,20 +167,21 @@ public class HuffModel
         {
             if (cc.array[i] != 0)
             {
-                treeArray[j++] = new HuffTree((char)i, cc.array[i]);
+                treeArray[i] = new HuffTree((char)i, cc.array[i]);
+                j++;
             }
         }
-        treeArray[j] = new HuffTree((char)IHuffModel.PSEUDO_EOF, 1); // add EOF
-                                                                     // char
+        treeArray[256] = new HuffTree((char)IHuffModel.PSEUDO_EOF, 1); // add
+                                                                       // EOF
+                                                                       // char
 
-        MinHeap Hheap = new MinHeap(treeArray, j, 257);
+        MinHeap Hheap = new MinHeap(treeArray, j + 1, 257);
 
         HuffTree tree = buildTree(Hheap);
 
         out.write(BITS_PER_INT, MAGIC_NUMBER);
 
-        System.out.println(tree.root().weight());
-// wTraverse(tree.root(), out);
+        wTraverse(tree.root(), out);
 
         // TODO write original file
 // while ((inbits = bit.read(BITS_PER_WORD)) != -1)
