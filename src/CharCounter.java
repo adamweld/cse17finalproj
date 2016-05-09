@@ -17,7 +17,7 @@ public class CharCounter
     /**
      * 256 bit array object to store values
      */
-    int[] array = new int[256];
+    private int[] array = new int[256];
 
 
     /**

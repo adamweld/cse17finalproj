@@ -18,9 +18,12 @@ public class HuffModel
     /**
      * input stream
      */
-    public BitInputStream istream;
-    public String[]       encodings;
-    public HuffTree       tree;
+    private BitInputStream istream;
+    private int            numCount;
+    private String[]       encodings;
+    private int[]          counts;
+    private HuffTree       tree;
+    private MinHeap        Hheap;
 
 
     /**
@@ -28,23 +31,21 @@ public class HuffModel
      */
     public void showCodings()
     {
-        HuffTree[] out = new HuffTree[257];
         CharCounter cc = new CharCounter();
-        cc.countAll(istream);
-        int j = 0;
-        for (int i = 0; i < cc.array.length; i++)
+        showCounts();
+        HuffTree[] out = new HuffTree[numCount];
+        int n = 0;
+        for (int i = 0; i < 256; i++)
         {
-            if (cc.array[i] != 0)
+            if (counts[i] != 0)
             {
-                out[i] = new HuffTree((char)i, cc.array[i]); // create new
-                j++; // leaf node with
-                // each char
+                out[n++] = new HuffTree((char)i, counts[i]);
             }
         }
 
-        MinHeap Hheap = new MinHeap(out, j, 257);
+        Hheap = new MinHeap(out, numCount, numCount);
 
-        tree = buildTree(Hheap);
+        tree = buildTree(); // this is null
 
         encodings = new String[257];
 
@@ -92,7 +93,7 @@ public class HuffModel
      *            is input
      * @return built tree
      */
-    HuffTree buildTree(MinHeap Hheap)
+    public HuffTree buildTree()
     {
         HuffTree tmp1, tmp2, tmp3 = null;
 
@@ -118,11 +119,14 @@ public class HuffModel
         CharCounter cc = new CharCounter();
         cc.countAll(istream);
         System.out.println("Frequency of each character (0 - 255):");
-        for (int i = 0; i < cc.array.length; i++)
+        for (int i = 0; i < 256; i++)
         {
-            if (cc.array[i] != 0)
+            if (cc.getCount((char)i) != 0)
             {
-                System.out.println(i + ": \t" + cc.array[i]);
+                int num = cc.getCount((char)i);
+                System.out.println((char)i + ": \t" + num);
+                numCount++;
+                counts[i] = num;
             }
         }
     }
@@ -138,6 +142,8 @@ public class HuffModel
     public void initialize(InputStream stream)
     {
         istream = (BitInputStream)stream;
+        numCount = 0;
+        counts = new int[256];
     }
 
 
@@ -160,7 +166,10 @@ public class HuffModel
         BitOutputStream out = new BitOutputStream("file");
         showCodings();
         out.write(BITS_PER_INT, MAGIC_NUMBER);
-        wTraverse(tree.root(), out);
+        if (tree != null)
+        {
+            wTraverse(tree.root(), out);
+        }
 
         // TODO write original file
 // while ((inbits = bit.read(BITS_PER_WORD)) != -1)

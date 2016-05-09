@@ -19,7 +19,6 @@ public class huff
         BitInputStream bits = new BitInputStream(new FileInputStream(filepath));
         HuffModel huff = new HuffModel();
         huff.initialize(bits);
-        huff.showCounts();
         /*
          * TODO: compute expected filesize Before writing the compressed file,
          * you should compute its expected size. To get the expected size (in

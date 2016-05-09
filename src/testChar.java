@@ -27,9 +27,8 @@ public class testChar
                     "C:\\Users\\adamweld\\Downloads\\test.txt"));
             HuffModel huff = new HuffModel();
             huff.initialize(bits);
-            huff.showCounts();
             huff.showCodings();
-//            huff.write(bits, "C:\\Users\\adamweld\\Downloads\\testout.txt", true);
+            huff.write(bits, "C:\\Users\\adamweld\\Downloads\\testout.txt", true);
         }
         catch (FileNotFoundException e)
         {
