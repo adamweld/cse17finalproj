@@ -25,20 +25,11 @@ public class HuffModel
     /**
      * Display all encodings (via the associated view).
      */
-    @Override
     public void showCodings()
     {
         HuffTree[] out = new HuffTree[256];
         CharCounter cc = new CharCounter();
-        try
-        {
-            cc.countAll(istream);
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        cc.countAll(istream);
 
         int j = 0;
         for (int i = 0; i < cc.array.length; i++)
@@ -122,19 +113,10 @@ public class HuffModel
     /**
      * Display all chunk/character counts (via the associated view).
      */
-    @Override
     public void showCounts()
     {
         CharCounter cc = new CharCounter();
-        try
-        {
-            cc.countAll(istream);
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        cc.countAll(istream);
         System.out.println("Frequency of each character (0 - 255):");
         for (int i = 0; i < cc.array.length; i++)
         {
@@ -153,7 +135,6 @@ public class HuffModel
      * @param stream
      *            is an input stream for initializing state of this model
      */
-    @Override
     public void initialize(InputStream stream)
     {
         istream = (BitInputStream)stream;
@@ -174,7 +155,6 @@ public class HuffModel
      * @param force
      *            indicates if compression forced
      */
-    @Override
     public void write(InputStream stream, String file, boolean force)
     {
         BitOutputStream out = new BitOutputStream("file");
@@ -182,15 +162,7 @@ public class HuffModel
         HuffTree[] treeArray = new HuffTree[257];
         CharCounter cc = new CharCounter();
 
-        try
-        {
-            cc.countAll(istream);
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        cc.countAll(istream);
         int j = 0;
         for (int i = 0; i < cc.array.length; i++)
         {
@@ -257,7 +229,6 @@ public class HuffModel
      * @param out
      *            is where the uncompressed bits will be written
      */
-    @Override
     public void uncompress(InputStream in, OutputStream out)
     {
         // TODO Auto-generated method stub

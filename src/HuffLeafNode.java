@@ -1,3 +1,4 @@
+
 /** Huffman tree node: Leaf class */
 class HuffLeafNode
     implements HuffBaseNode

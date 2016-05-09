@@ -14,7 +14,6 @@
  * @version 1.0, July 2000
  * @version 2.0, October 2004
  */
-
 import java.io.*;
 
 public class BitOutputStream extends OutputStream

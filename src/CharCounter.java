@@ -29,7 +29,7 @@ public class CharCounter
      * @throws some
      *             kind of exception if ch isn't a valid chunk/character
      */
-    @Override
+
     public int getCount(int ch)
     {
         if (ch < 0 || ch > 255)
@@ -47,17 +47,23 @@ public class CharCounter
      * @throws IOException
      *             if reading fails
      */
-    @Override
     public int countAll(InputStream stream)
-        throws IOException
     {
         int inbits;
         int count = 0;
-        while ((inbits =
-            ((BitInputStream)stream).read(IHuffModel.BITS_PER_WORD)) != -1)
+        try
         {
-            count++;
-            add(inbits);
+            while ((inbits =
+                ((BitInputStream)stream).read(IHuffModel.BITS_PER_WORD)) != -1)
+            {
+                count++;
+                add(inbits);
+            }
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
         return count;
     }
@@ -69,7 +75,7 @@ public class CharCounter
      * @param i
      *            is the chunk being recorded
      */
-    @Override
+
     public void add(int i)
     {
         array[i]++;
@@ -84,7 +90,7 @@ public class CharCounter
      * @param value
      *            is # occurrences of specified chunk
      */
-    @Override
+
     public void set(int i, int value)
     {
         array[i] = value;
@@ -94,7 +100,7 @@ public class CharCounter
     /**
      * All counts cleared to zero.
      */
-    @Override
+
     public void clear()
     {
         for (int i = 0; i < array.length; i++)
