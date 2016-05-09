@@ -158,23 +158,31 @@ public class HuffModel
      */
     public void write(InputStream stream, String file, boolean force)
     {
-        BitOutputStream out = new BitOutputStream("file");
+        BitOutputStream out = new BitOutputStream("file" + ".huff");
         showCodings();
         out.write(BITS_PER_INT, MAGIC_NUMBER);
-        if (tree != null)
-        {
-            wTraverse(tree.root(), out);
-        }
 
-        // TODO write original file
-// while ((inbits = bit.read(BITS_PER_WORD)) != -1)
-// {
-// // get the code computed in part II
-// // convert that code into an array of chars using .toCharArray() method
-// //go through the array of char and write each char (cast as int) using 1 bit
-// //out.write(1, (int)char);
-//
-// }
+        wTraverse(tree.root(), out);
+        BitInputStream bit = new BitInputStream("file");
+        int inbits;
+        try
+        {
+            while ((inbits = bit.read(BITS_PER_WORD)) != -1)
+            {
+                char[] data = encodings[inbits].toCharArray();
+
+            }
+            String eof = ((Integer)IHuffModel.PSEUDO_EOF).toString();;
+            char[] endfile = eof.toCharArray();
+            for(int i = 0; i < endfile.length; i++) {
+                out.write(1, endfile[i]);
+            }
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         out.close();
     }
 
@@ -188,7 +196,7 @@ public class HuffModel
      */
     public void wTraverse(HuffBaseNode root, BitOutputStream bit)
     {
-        while (root != null)
+        if (root != null)
         {
             if (root.isLeaf())
             {
@@ -198,9 +206,9 @@ public class HuffModel
             else
             {
                 bit.write(1, 0);
+                wTraverse(((HuffInternalNode)root).left(), bit);
+                wTraverse(((HuffInternalNode)root).right(), bit);
             }
-            wTraverse(((HuffInternalNode)root).left(), bit);
-            wTraverse(((HuffInternalNode)root).right(), bit);
         }
     }
 
