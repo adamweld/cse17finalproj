@@ -20,7 +20,6 @@ public class huff
         HuffModel huff = new HuffModel();
         huff.initialize(bits);
         huff.showCounts();
-        huff.showCodings();
         /*
          * TODO: compute expected filesize Before writing the compressed file,
          * you should compute its expected size. To get the expected size (in

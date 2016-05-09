@@ -20,6 +20,7 @@ public class HuffModel
      */
     public BitInputStream istream;
     public String[]       encodings;
+    public HuffTree       tree;
 
 
     /**
@@ -43,13 +44,13 @@ public class HuffModel
 
         MinHeap Hheap = new MinHeap(out, j, 257);
 
-        HuffTree tree = buildTree(Hheap);
+        tree = buildTree(Hheap);
 
         encodings = new String[257];
 
         traverse(tree.root(), "");
 
-        for (int k = 0; k < 257; k++)
+        for (int k = 0; k < 257; k++) // print values
         {
             if (encodings[k] != null)
             {
@@ -157,30 +158,8 @@ public class HuffModel
     public void write(InputStream stream, String file, boolean force)
     {
         BitOutputStream out = new BitOutputStream("file");
-        istream = (BitInputStream)stream;
-        HuffTree[] treeArray = new HuffTree[257];
-        CharCounter cc = new CharCounter();
-
-        cc.countAll(istream);
-        int j = 0;
-        for (int i = 0; i < cc.array.length; i++)
-        {
-            if (cc.array[i] != 0)
-            {
-                treeArray[i] = new HuffTree((char)i, cc.array[i]);
-                j++;
-            }
-        }
-        treeArray[256] = new HuffTree((char)IHuffModel.PSEUDO_EOF, 1); // add
-                                                                       // EOF
-                                                                       // char
-
-        MinHeap Hheap = new MinHeap(treeArray, j + 1, 257);
-
-        HuffTree tree = buildTree(Hheap);
-
+        showCodings();
         out.write(BITS_PER_INT, MAGIC_NUMBER);
-
         wTraverse(tree.root(), out);
 
         // TODO write original file
