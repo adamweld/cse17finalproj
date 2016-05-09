@@ -21,12 +21,15 @@ public class huff
      */
     public static void main(String[] args) throws FileNotFoundException
     {
+        boolean force = false;
         if(args.length == 0) {
             System.out.println("must include an argument");
             System.exit(0);
         }
         String filepath = args[0];
-        Boolean force = args[1].equals("true");
+        if(args.length == 2) {
+            force = args[1].equals("true");
+        }
         BitInputStream bits = new BitInputStream(new FileInputStream(filepath));
         HuffModel huff = new HuffModel();
         huff.initialize(bits);

@@ -1,5 +1,6 @@
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 // -------------------------------------------------------------------------
 /**
@@ -20,14 +21,26 @@ public class testChar
      */
     public static void main(String[] args)
     {
+
+        BitInputStream bits;
         try
         {
-            BitInputStream bits = new BitInputStream(
+            bits = new BitInputStream(
                 new FileInputStream(
                     "C:\\Users\\adamweld\\Downloads\\test.txt"));
+
             HuffModel huff = new HuffModel();
             huff.initialize(bits);
-            huff.write(bits, "C:\\Users\\adamweld\\Downloads\\test.txt", true);
+            huff.write(bits, "C:\\Users\\adamweld\\Downloads\\test.txt", false);
+            try
+            {
+                huff.uncompress(bits, new BitOutputStream("C:\\Users\\adamweld\\Downloads\\testout.txt"));
+            }
+            catch (IOException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         catch (FileNotFoundException e)
         {
