@@ -14,12 +14,14 @@
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.File;
+import java.io.IOException;
 
 public interface IHuffModel extends IHuffConstants {
     /**
      * Display all encodings (via the associated view).
+     * @throws IOException
      */
-    public void showCodings();
+    public void showCodings() throws IOException;
 
     /**
      * Display all chunk/character counts (via the associated view).

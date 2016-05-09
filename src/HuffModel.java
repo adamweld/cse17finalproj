@@ -59,7 +59,8 @@ public class HuffModel
 
         traverse(tree.root(), "", 0);
 
-        for(int k = 0; k < j; k++) {
+        for (int k = 0; k < j; k++)
+        {
             System.out.println(encodings[k]);
         }
 
@@ -85,7 +86,7 @@ public class HuffModel
             {
                 encodings[num] = path + ((HuffLeafNode)root).element();
                 num++;
-//                path = "";
+// path = "";
             }
             traverse(((HuffInternalNode)root).right(), path + "1", num);
         }
@@ -180,16 +181,8 @@ public class HuffModel
         istream = (BitInputStream)stream;
         HuffTree[] treeArray = new HuffTree[256];
         CharCounter cc = new CharCounter();
-        try
-        {
-            cc.countAll(istream);
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
+        cc.countAll(istream);
         int j = 0;
         for (int i = 0; i < cc.array.length; i++)
         {
@@ -222,23 +215,28 @@ public class HuffModel
     }
 
 
+    // ----------------------------------------------------------
+    /**
+     * traversal method for Write()
+     * @param root
+     * @param bit
+     */
     public void wTraverse(HuffBaseNode root, BitOutputStream bit)
     {
-
-        if (root.isLeaf())
+        while (root != null)
         {
-            bit.write(1, 1); // leaf node
-            bit.write(9, ((HuffLeafNode)root).element());
+            wTraverse(((HuffInternalNode)root).left(), bit);
+            if (root.isLeaf())
+            {
+                bit.write(1, 1); // leaf node
+                bit.write(9, ((HuffLeafNode)root).element());
+            }
+            else
+            {
+                bit.write(1, 0);
+            }
+            wTraverse(((HuffInternalNode)root).right(), bit);
         }
-        else
-        {
-            bit.write(1, 0);
-        }
-        wTraverse(((HuffInternalNode)root).left(), bit);
-        wTraverse(((HuffInternalNode)root).right(), bit);
-
-// bit.write(1, 1);
-// bit.write(9, PSEUDO_EOF);
     }
 
 
