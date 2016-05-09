@@ -49,12 +49,8 @@ public class HuffModel
 
         encodings = new String[257];
 
-
         System.out.println("Showing Encoding of Data:");
         traverse(tree.root(), "");
-
-
-
     }
 
 
@@ -64,11 +60,10 @@ public class HuffModel
      *
      * @param root
      * @param path
-     * @param num
      */
     public void traverse(HuffBaseNode root, String path)
     {
-        while (root != null)
+        if (root != null)
         {
             if (root.isLeaf())
             {
