@@ -27,32 +27,33 @@ public class HuffModel
      */
     public void showCodings()
     {
-        HuffTree[] out = new HuffTree[256];
+        HuffTree[] out = new HuffTree[257];
         CharCounter cc = new CharCounter();
         cc.countAll(istream);
-
         int j = 0;
         for (int i = 0; i < cc.array.length; i++)
         {
             if (cc.array[i] != 0)
             {
-                out[j++] = new HuffTree((char)i, cc.array[i]); // create new
-                                                               // leaf node with
-                                                               // each char
+                out[i] = new HuffTree((char)i, cc.array[i]); // create new
+                j++; // leaf node with
+                // each char
             }
         }
 
-        MinHeap Hheap = new MinHeap(out, j, 256);
+        MinHeap Hheap = new MinHeap(out, j, 257);
 
         HuffTree tree = buildTree(Hheap);
 
-        encodings = new String[j];
+        encodings = new String[257];
 
-        traverse(tree.root(), "", 0);
+        traverse(tree.root(), "");
 
-        for (int k = 0; k < j; k++)
+        for (int k = 0; k < 257; k++)
         {
-            System.out.println(encodings[k]);
+            if(encodings[k] != null) {
+                System.out.println((char)k + ": " + encodings[k]);
+            }
         }
 
     }
@@ -66,20 +67,17 @@ public class HuffModel
      * @param path
      * @param num
      */
-    public void traverse(HuffBaseNode root, String path, int num)
+    public void traverse(HuffBaseNode root, String path)
     {
-        System.out.println("made it");
         while (root != null)
         {
-
-            traverse(((HuffInternalNode)root).left(), path + "0", num);
+            traverse(((HuffInternalNode)root).left(), path + "0");
             if (root.isLeaf())
             {
-                encodings[num] = path + ((HuffLeafNode)root).element();
-                num++;
-// path = "";
+                int index = ((HuffLeafNode)root).element();
+                encodings[index] = path + Integer.toBinaryString(index);
             }
-            traverse(((HuffInternalNode)root).right(), path + "1", num);
+            traverse(((HuffInternalNode)root).right(), path + "1");
         }
     }
 
@@ -180,7 +178,8 @@ public class HuffModel
 
         out.write(BITS_PER_INT, MAGIC_NUMBER);
 
-        wTraverse(tree.root(), out);
+        System.out.println(tree.root().weight());
+// wTraverse(tree.root(), out);
 
         // TODO write original file
 // while ((inbits = bit.read(BITS_PER_WORD)) != -1)
