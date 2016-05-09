@@ -4,8 +4,7 @@ import java.io.FileNotFoundException;
 
 // -------------------------------------------------------------------------
 /**
- * Write a one-sentence summary of your class here. Follow it with additional
- * details about its purpose, what abstraction it represents, and how to use it.
+ * huffman compress
  *
  * @author adamweld
  * @version May 3, 2016
@@ -15,14 +14,19 @@ public class huff
 
     // ----------------------------------------------------------
     /**
-     * Place a description of your method here.
-     * @param force
-     * @param filepath
-     * @throws FileNotFoundException
+     * huff compresses files
+     * @param force whether to force compression
+     * @param filepath file to compress
+     * @throws FileNotFoundException if you mess up
      */
-    public static void main(boolean force, String filepath) throws FileNotFoundException
+    public static void main(String[] args) throws FileNotFoundException
     {
-
+        if(args.length == 0) {
+            System.out.println("must include an argument");
+            System.exit(0);
+        }
+        String filepath = args[0];
+        Boolean force = args[1].equals("true");
         BitInputStream bits = new BitInputStream(new FileInputStream(filepath));
         HuffModel huff = new HuffModel();
         huff.initialize(bits);
