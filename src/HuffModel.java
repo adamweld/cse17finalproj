@@ -45,19 +45,15 @@ public class HuffModel
 
         Hheap = new MinHeap(out, numCount, numCount);
 
-        tree = buildTree(); // this is null
+        tree = buildTree();
 
         encodings = new String[257];
 
+
+        System.out.println("Showing Encoding of Data:");
         traverse(tree.root(), "");
 
-        for (int k = 0; k < 257; k++) // print values
-        {
-            if (encodings[k] != null)
-            {
-                System.out.println((char)k + ": " + encodings[k]);
-            }
-        }
+
 
     }
 
@@ -74,13 +70,17 @@ public class HuffModel
     {
         while (root != null)
         {
-            traverse(((HuffInternalNode)root).left(), path + "0");
             if (root.isLeaf())
             {
                 int index = ((HuffLeafNode)root).element();
                 encodings[index] = path + Integer.toBinaryString(index);
+                System.out.println((char)index + ": " + encodings[index]);
             }
-            traverse(((HuffInternalNode)root).right(), path + "1");
+            else
+            {
+                traverse(((HuffInternalNode)root).left(), path + "0");
+                traverse(((HuffInternalNode)root).right(), path + "1");
+            }
         }
     }
 
@@ -195,7 +195,6 @@ public class HuffModel
     {
         while (root != null)
         {
-            wTraverse(((HuffInternalNode)root).left(), bit);
             if (root.isLeaf())
             {
                 bit.write(1, 1); // leaf node
@@ -205,6 +204,7 @@ public class HuffModel
             {
                 bit.write(1, 0);
             }
+            wTraverse(((HuffInternalNode)root).left(), bit);
             wTraverse(((HuffInternalNode)root).right(), bit);
         }
     }
