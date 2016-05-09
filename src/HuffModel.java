@@ -26,14 +26,13 @@ public class HuffModel
     private MinHeap        Hheap;
 
 
-
     /**
      * Display all encodings (via the associated view).
      */
     public void showCodings()
     {
         showCounts();
-        HuffTree[] out = new HuffTree[numCount];
+        HuffTree[] out = new HuffTree[numCount + 1];
         int n = 0;
         for (int i = 0; i < 256; i++)
         {
@@ -166,26 +165,29 @@ public class HuffModel
         wTraverse(tree.root(), out);
         BitInputStream bit = new BitInputStream(file);
         int inbits;
-            try
+        try
+        {
+            while ((inbits = bit.read(BITS_PER_WORD)) != -1)
             {
-                while ((inbits = bit.read(BITS_PER_WORD)) != -1)
+                char[] data = encodings[inbits].toCharArray();
+                for (int i = 0; i < data.length; i++)
                 {
-                    char[] data = encodings[inbits].toCharArray();
-                    for(int i = 0; i < data.length; i++) {
-                        out.write(1, data[i]);
-                    }
+                    out.write(1, data[i]);
                 }
             }
-            catch (IOException e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            String eof = ((Integer)IHuffModel.PSEUDO_EOF).toString();;
-            char[] endfile = eof.toCharArray();
-            for(int i = 0; i < endfile.length; i++) {
-                out.write(1, endfile[i]);
-            }
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        String eof = ((Integer)IHuffModel.PSEUDO_EOF).toString();
+        ;
+        char[] endfile = eof.toCharArray();
+        for (int i = 0; i < endfile.length; i++)
+        {
+            out.write(1, endfile[i]);
+        }
 
         out.close();
     }
@@ -245,32 +247,33 @@ public class HuffModel
         buildTree(rootNode, (BitInputStream)in);
 
 
-//
-//        int bits;
-//        while (true)
-//        {
-//            bits = ((BitInputStream)in).read(1);
-//            if (bits == -1)
-//            {
-//                throw new IOException("unexpected end of input file");
-//            }
-//            else
-//            {
-//                // use the zero/one value of the bit read
-//                // to traverse Huffman coding tree
-//                // if a leaf is reached, decode the character and print UNLESS
-//                // the character is pseudo-EOF, then decompression done
-//                if ( (bits & 1) == 0) // read a 0, go left in tree
-//                else // read a 1, go right in tree
-//                if (isLeaf())
-//                {
-//                    if (leaf-node stores pseudo-eof char)
-//                        break; // out of loop
-//                    else
-//                        write character stored in leaf-node
-//                }
-//            }
-//        }
+
+        int bits;
+        HuffBaseNode thisNode = rootNode;
+        while (true)
+        {
+            bits = ((BitInputStream)in).read(1);
+            if (bits == -1)
+            {
+                throw new IOException("unexpected end of input file");
+            }
+            else
+            {
+
+                if (bits == 0) {
+                    thisNode = ((HuffInternalNode)thisNode).left();
+                }
+                else thisNode = ((HuffInternalNode)thisNode).right();
+                if (thisNode.isLeaf())
+                {
+                    int val = ((HuffLeafNode)thisNode).element();
+                    if (val == IHuffModel.PSEUDO_EOF)
+                        break; // out of loop
+                    else
+                        ((BitOutputStream)out).write(val);
+                }
+            }
+        }
         in.close();
         out.close();
     }
@@ -282,27 +285,25 @@ public class HuffModel
      * @param root
      * @param bit
      * @return
+     * @throws IOException
      */
-    public HuffBaseNode buildTree(HuffBaseNode root, BitInputStream bit)
+    public HuffBaseNode buildTree(HuffBaseNode root, BitInputStream bit) throws IOException
     {
-        int inbits;
+        int inbits = bit.read(BITS_PER_WORD);
         try
         {
-            while ((inbits = bit.read(BITS_PER_WORD)) != -1)
+            if (inbits == 0)
             {
-                if (inbits == 0)
-                {
-                    HuffBaseNode left = null, right = null;
-                    root = new HuffInternalNode(
-                        buildTree(left, bit),
-                        buildTree(right, bit),
-                        0);
-                }
-                else if (inbits == 1)
-                {
-                    char data = (char)bit.read(BITS_PER_WORD * 9);
-                    root = new HuffLeafNode(data, 0);
-                }
+                HuffBaseNode left = null, right = null;
+                root = new HuffInternalNode(
+                    buildTree(left, bit),
+                    buildTree(right, bit),
+                    0);
+            }
+            else if (inbits == 1)
+            {
+                char data = (char)bit.read(BITS_PER_WORD * 9);
+                root = new HuffLeafNode(data, 0);
             }
         }
         catch (IOException e)
