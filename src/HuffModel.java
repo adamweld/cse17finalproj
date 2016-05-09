@@ -31,7 +31,6 @@ public class HuffModel
      */
     public void showCodings()
     {
-        CharCounter cc = new CharCounter();
         showCounts();
         HuffTree[] out = new HuffTree[numCount];
         int n = 0;
@@ -158,19 +157,20 @@ public class HuffModel
      */
     public void write(InputStream stream, String file, boolean force)
     {
-        BitOutputStream out = new BitOutputStream("file" + ".huff");
+        BitOutputStream out = new BitOutputStream(file + ".huff");
         showCodings();
         out.write(BITS_PER_INT, MAGIC_NUMBER);
 
         wTraverse(tree.root(), out);
-        BitInputStream bit = new BitInputStream("file");
+        BitInputStream bit = new BitInputStream(file);
         int inbits;
-        try
         {
             while ((inbits = bit.read(BITS_PER_WORD)) != -1)
             {
                 char[] data = encodings[inbits].toCharArray();
-
+                for(int i = 0; i < data.length; i++) {
+                    out.write(1, data[i]);
+                }
             }
             String eof = ((Integer)IHuffModel.PSEUDO_EOF).toString();;
             char[] endfile = eof.toCharArray();
@@ -220,11 +220,77 @@ public class HuffModel
      *            is the compressed file to be uncompressed
      * @param out
      *            is where the uncompressed bits will be written
+     * @throws IOException
      */
-    public void uncompress(InputStream in, OutputStream out)
+    public void uncompress(InputStream in, OutputStream out) throws IOException
     {
-        // TODO Auto-generated method stub
+        int magic = 0;
+        try
+        {
+            magic = ((BitInputStream)in).read(BITS_PER_INT);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        if (magic != MAGIC_NUMBER){
+            throw new IOException("magic number not right");
+         }
+        HuffTree readTree;
 
+
+
+        int bits;
+        while (true)
+        {
+            bits = ((BitInputStream)in).read(1);
+            if (bits == -1)
+            {
+                throw new IOException("unexpected end of input file");
+            }
+            else
+            {
+                // use the zero/one value of the bit read
+                // to traverse Huffman coding tree
+                // if a leaf is reached, decode the character and print UNLESS
+                // the character is pseudo-EOF, then decompression done
+                if ( (bits & 1) == 0) // read a 0, go left in tree
+                else // read a 1, go right in tree
+                if (isLeaf())
+                {
+                    if (leaf-node stores pseudo-eof char)
+                        break; // out of loop
+                    else
+                        write character stored in leaf-node
+                }
+            }
+        }
+        in.close();
+        out.close();
+    }
+
+    public HuffBaseNode buildTree(HuffBaseNode root, BitInputStream bit) {
+        int inbits;
+        treeRoot = new HuffInternalNode(left, right, 0);
+        try
+        {
+            while ((inbits = bit.read(BITS_PER_WORD)) != -1)
+            {
+                if(inbits == 0) {
+                     newRoot = new HuffInternalNode(left, right, 0); // HuffInternalNode(HuffBaseNode l, HuffBaseNode r, int wt)
+                }
+                else if(inbits == 1) {
+                    char data = (char)bit.read(BITS_PER_WORD * 9);
+                    new HuffLeafNode(data, 0); // HuffLeafNode(char el, int wt)
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
 }
