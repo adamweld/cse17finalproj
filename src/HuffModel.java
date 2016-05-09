@@ -179,10 +179,18 @@ public class HuffModel
     {
         BitOutputStream out = new BitOutputStream("file");
         istream = (BitInputStream)stream;
-        HuffTree[] treeArray = new HuffTree[256];
+        HuffTree[] treeArray = new HuffTree[257];
         CharCounter cc = new CharCounter();
 
-        cc.countAll(istream);
+        try
+        {
+            cc.countAll(istream);
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         int j = 0;
         for (int i = 0; i < cc.array.length; i++)
         {
@@ -191,26 +199,26 @@ public class HuffModel
                 treeArray[j++] = new HuffTree((char)i, cc.array[i]);
             }
         }
+        treeArray[j] = new HuffTree((char)IHuffModel.PSEUDO_EOF, 1); // add EOF
+                                                                     // char
 
-        MinHeap Hheap = new MinHeap(treeArray, j, 256);
+        MinHeap Hheap = new MinHeap(treeArray, j, 257);
 
         HuffTree tree = buildTree(Hheap);
-
-        String[] output = new String[256];
-
-        j = 0;
-        for (int k = 0; k < treeArray.length; k++)
-        {
-            String str = "";
-            output[j++] = traverse((HuffBaseNode)treeArray[k], str);
-
-            System.out.println(output[j - 1]);
-        }
 
         out.write(BITS_PER_INT, MAGIC_NUMBER);
 
         wTraverse(tree.root(), out);
 
+        // TODO write original file
+// while ((inbits = bit.read(BITS_PER_WORD)) != -1)
+// {
+// // get the code computed in part II
+// // convert that code into an array of chars using .toCharArray() method
+// //go through the array of char and write each char (cast as int) using 1 bit
+// //out.write(1, (int)char);
+//
+// }
         out.close();
     }
 
@@ -218,6 +226,7 @@ public class HuffModel
     // ----------------------------------------------------------
     /**
      * traversal method for Write()
+     *
      * @param root
      * @param bit
      */
