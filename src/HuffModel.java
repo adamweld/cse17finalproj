@@ -188,7 +188,6 @@ public class HuffModel
      */
     public void write(InputStream stream, String file, boolean force)
     {
-        BitOutputStream out = new BitOutputStream(file + ".huff");
         showCodings();
         if (!force)
         {
@@ -212,6 +211,7 @@ public class HuffModel
                 System.out.println("Compressing...");
             }
         }
+        BitOutputStream out = new BitOutputStream(file + ".huff");
         out.write(BITS_PER_INT, MAGIC_NUMBER);
         wTraverse(tree.root(), out);
         BitInputStream bit = new BitInputStream(file);
