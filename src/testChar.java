@@ -31,10 +31,13 @@ public class testChar
 
             HuffModel huff = new HuffModel();
             huff.initialize(bits);
-            huff.write(bits, "C:\\Users\\adamweld\\Downloads\\test.txt", false);
+            huff.write(bits, "C:\\Users\\adamweld\\Downloads\\test.txt", true);
             try
             {
-                huff.uncompress(bits, new BitOutputStream("C:\\Users\\adamweld\\Downloads\\testout.txt"));
+                BitInputStream bits2 = new BitInputStream(
+                    new FileInputStream(
+                        "C:\\Users\\adamweld\\Downloads\\test.txt.huff"));
+                huff.uncompress(bits2, new BitOutputStream("C:\\Users\\adamweld\\Downloads\\testout.txt"));
             }
             catch (IOException e)
             {

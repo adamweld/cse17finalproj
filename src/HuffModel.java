@@ -1,15 +1,12 @@
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 
 // -------------------------------------------------------------------------
 /**
- * Write a one-sentence summary of your class here. Follow it with additional
- * details about its purpose, what abstraction it represents, and how to use it.
+ * main class to create file compressor/uncompressor
  *
- * @author adamweld
+ * @author adamweld, conor
  * @version Apr 12, 2016
  */
 public class HuffModel
@@ -34,6 +31,7 @@ public class HuffModel
     {
         showCounts();
         HuffTree[] out = new HuffTree[numCount + 1];
+        encodings = new String[257];
         int n = 0;
         for (int i = 0; i < 256; i++)
         {
@@ -42,16 +40,19 @@ public class HuffModel
                 out[n++] = new HuffTree((char)i, counts[i]);
             }
         }
-        out[n] = new HuffTree((char)IHuffModel.PSEUDO_EOF, 1);
-
-        Hheap = new MinHeap(out, numCount + 1, numCount + 1);
-
-        tree = buildTree();
-
-        encodings = new String[257];
-
-        System.out.println("Showing Encoding of Data:");
+        out[n++] = new HuffTree((char)IHuffModel.PSEUDO_EOF, 1); // end of file
+        Hheap = new MinHeap(out, n, n); // create leaf nodes for hufftree
+        tree = buildTree(); // build full huff tree
         traverse(tree.root(), "");
+        System.out.println("Showing Encoding of Data:");
+        for (int k = 0; k < counts.length; k++)
+        {
+            String e = encodings[k];
+            if (e != null)
+            {
+                System.out.println((char)k + ": \t" + e);
+            }
+        }
     }
 
 
@@ -60,25 +61,24 @@ public class HuffModel
      * recursive traversal method
      *
      * @param root
+     *            is root node
      * @param path
+     *            is path in string form
      */
-    public void traverse(HuffBaseNode root, String path)
+    private void traverse(HuffBaseNode root, String path)
     {
-        if (root != null)
+        if (root == null)
+            return;
+        else if (root.isLeaf())
         {
-            if (root.isLeaf())
-            {
-                size += 10;
-                int index = ((HuffLeafNode)root).element();
-                encodings[index] = path + Integer.toBinaryString(index);
-                System.out.println((char)index + ": " + encodings[index]);
-            }
-            else
-            {
-                size++;
-                traverse(((HuffInternalNode)root).left(), path + "0");
-                traverse(((HuffInternalNode)root).right(), path + "1");
-            }
+            size += 10;
+            encodings[((HuffLeafNode)root).element()] = path;
+        }
+        else
+        {
+            size++;
+            traverse(((HuffInternalNode)root).left(), path + "0");
+            traverse(((HuffInternalNode)root).right(), path + "1");
         }
     }
 
@@ -91,7 +91,7 @@ public class HuffModel
      *            is input
      * @return built tree
      */
-    public HuffTree buildTree()
+    private HuffTree buildTree()
     {
         HuffTree tmp1, tmp2, tmp3 = null;
 
@@ -123,8 +123,8 @@ public class HuffModel
             {
                 int num = cc.getCount((char)i);
                 System.out.println((char)i + ": \t" + num);
-                numCount++;
                 counts[i] = num;
+                numCount++;
             }
         }
         if (numCount == 0)
@@ -155,9 +155,9 @@ public class HuffModel
     /**
      * size of compressed part of tree
      *
-     * @return
+     * @return length of compressed part
      */
-    public int huffLength()
+    private int huffLength()
     {
         int ret = 0;
         for (int i = 0; i < encodings.length; i++)
@@ -181,15 +181,15 @@ public class HuffModel
      * @param stream
      *            is the input stream to be compressed
      * @param file
-     *            specifes the file to be written with compressed data
+     *            specifies the file to be written with compressed data
      * @param force
      *            indicates if compression forced
+     * @throws IOException
      */
     public void write(InputStream stream, String file, boolean force)
     {
         BitOutputStream out = new BitOutputStream(file + ".huff");
         showCodings();
-
         if (!force)
         {
             int expectedSize = size + BITS_PER_INT + huffLength();
@@ -201,12 +201,11 @@ public class HuffModel
                     originalSize += 8 * counts[i];
                 }
             }
-
-            System.out.println("orig: " + originalSize + " - expected: " + expectedSize);
             if (expectedSize >= originalSize)
             {
                 System.out
                     .println("File would be larger if compressed, skipping...");
+                System.exit(0);
             }
             else
             {
@@ -214,7 +213,6 @@ public class HuffModel
             }
         }
         out.write(BITS_PER_INT, MAGIC_NUMBER);
-
         wTraverse(tree.root(), out);
         BitInputStream bit = new BitInputStream(file);
         int inbits;
@@ -227,22 +225,22 @@ public class HuffModel
                 {
                     out.write(1, data[i]);
                 }
+
             }
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
+            System.out.println("IO Exception");
             e.printStackTrace();
         }
-        String eof = ((Integer)IHuffModel.PSEUDO_EOF).toString();
-        ;
-        char[] endfile = eof.toCharArray();
-        for (int i = 0; i < endfile.length; i++)
+        char[] data = encodings[256].toCharArray(); // Write EOF
+        for (int i = 0; i < data.length; i++)
         {
-            out.write(1, endfile[i]);
+            out.write(1, data[i]);
         }
 
         out.close();
+        bit.close();
     }
 
 
@@ -253,21 +251,20 @@ public class HuffModel
      * @param root
      * @param bit
      */
-    public void wTraverse(HuffBaseNode root, BitOutputStream bit)
+    private void wTraverse(HuffBaseNode root, BitOutputStream bit)
     {
-        if (root != null)
+        if (root == null)
+            return;
+        if (root.isLeaf())
         {
-            if (root.isLeaf())
-            {
-                bit.write(1, 1); // leaf node
-                bit.write(9, ((HuffLeafNode)root).element());
-            }
-            else
-            {
-                bit.write(1, 0);
-                wTraverse(((HuffInternalNode)root).left(), bit);
-                wTraverse(((HuffInternalNode)root).right(), bit);
-            }
+            bit.write(1, 1); // leaf node
+            bit.write(9, ((HuffLeafNode)root).element());
+        }
+        else
+        {
+            bit.write(1, 0);
+            wTraverse(((HuffInternalNode)root).left(), bit);
+            wTraverse(((HuffInternalNode)root).right(), bit);
         }
     }
 
@@ -291,18 +288,16 @@ public class HuffModel
         }
         catch (IOException e)
         {
-            // TODO Auto-generated catch block
+            System.out.println("IO Exception");
             e.printStackTrace();
         }
         if (magic != MAGIC_NUMBER)
         {
             throw new IOException("magic number not right");
         }
-        HuffInternalNode rootNode = null;
-        buildTree(rootNode, (BitInputStream)in);
-
-        int bits;
+        HuffBaseNode rootNode = buildHuffTree((BitInputStream)in);
         HuffBaseNode thisNode = rootNode;
+        int bits;
         while (true)
         {
             bits = ((BitInputStream)in).read(1);
@@ -312,20 +307,28 @@ public class HuffModel
             }
             else
             {
-
-                if (bits == 0)
                 {
-                    thisNode = ((HuffInternalNode)thisNode).left();
-                }
-                else
-                    thisNode = ((HuffInternalNode)thisNode).right();
-                if (thisNode.isLeaf())
-                {
-                    int val = ((HuffLeafNode)thisNode).element();
-                    if (val == IHuffModel.PSEUDO_EOF)
-                        break; // out of loop
+                    if (bits == 0)
+                    {
+                        thisNode = ((HuffInternalNode)thisNode).left();
+                    }
                     else
-                        ((BitOutputStream)out).write(val);
+                    {
+                        thisNode = ((HuffInternalNode)thisNode).right();
+                    }
+                    if (thisNode.isLeaf())
+                    {
+                        int val = ((HuffLeafNode)thisNode).element();
+                        if (val == PSEUDO_EOF)
+                        {
+                            break; // out of loop
+                        }
+                        else
+                        {
+                            ((BitOutputStream)out).write(val);
+                            thisNode = rootNode;
+                        }
+                    }
                 }
             }
         }
@@ -338,29 +341,28 @@ public class HuffModel
     /**
      * builds huffman tree from file
      *
-     * @param root
      * @param bit
      * @return the built tree
      * @throws IOException
      */
-    public HuffBaseNode buildTree(HuffBaseNode root, BitInputStream bit)
+    private HuffBaseNode buildHuffTree(BitInputStream bit)
         throws IOException
     {
-        int inbits = bit.read(BITS_PER_WORD);
+        int inbits = bit.read(1);
+        HuffBaseNode root = null;
         try
         {
             if (inbits == 0)
             {
-                HuffBaseNode left = null, right = null;
                 root = new HuffInternalNode(
-                    buildTree(left, bit),
-                    buildTree(right, bit),
-                    0);
+                    buildHuffTree(bit),
+                    buildHuffTree(bit),
+                    1);
             }
             else if (inbits == 1)
             {
-                char data = (char)bit.read(BITS_PER_WORD * 9);
-                root = new HuffLeafNode(data, 0);
+                int data = bit.read(9);
+                return new HuffLeafNode((char)data, 1);
             }
         }
         catch (IOException e)
@@ -370,5 +372,4 @@ public class HuffModel
         }
         return root;
     }
-
 }

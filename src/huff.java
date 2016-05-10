@@ -1,4 +1,3 @@
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
@@ -15,8 +14,7 @@ public class huff
     // ----------------------------------------------------------
     /**
      * huff compresses files
-     * @param force whether to force compression
-     * @param filepath file to compress
+     * @param args is input arguments
      * @throws FileNotFoundException if you mess up
      */
     public static void main(String[] args) throws FileNotFoundException

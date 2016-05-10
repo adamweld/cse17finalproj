@@ -15,9 +15,8 @@ public class unhuff
     // ----------------------------------------------------------
     /**
      * uncompresses huff files
+     * @param args is input
      *
-     * @param filepath
-     *            is file to unhuff
      * @throws IOException
      *             for wrong files
      */
