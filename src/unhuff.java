@@ -49,7 +49,7 @@ public class unhuff
         }
         extension = filepath.substring(index2); // file extension
         BitOutputStream out = new BitOutputStream(
-            filepath.substring(0, index1) + ".unhuffed" + extension);
+            filepath.substring(0, index2) + ".unhuffed" + extension);
         HuffModel huff = new HuffModel();
         try
         {
@@ -57,8 +57,8 @@ public class unhuff
         }
         catch (IOException e)
         {
-            System.out
-                .println("you probably tried to unhuff a non-huffed file");
+            System.out.println(
+                "you probably tried to unhuff a non-huffed file. aborting");
         }
     }
 }
